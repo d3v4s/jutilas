@@ -88,6 +88,11 @@ public class JutilasSys {
 				if (OS_NAME.contains("win")) {
 					if (Pattern.matches(regex, stdo)) {
 						br.close();
+						try {
+							Thread.sleep(timeSleep);
+						} catch (InterruptedException e) {
+							e.printStackTrace();
+						}
 						return Double.valueOf(stdo);
 					}
 				} else {
@@ -125,7 +130,6 @@ public class JutilasSys {
 //							CPU_Percentage = (totalDiff - idleDiff)/totalDiff;
 							br.close();
 							return (100 * actvDiff)/totalDiff;
-							
 						}
 						
 					}
