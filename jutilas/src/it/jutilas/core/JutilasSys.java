@@ -60,15 +60,9 @@ public class JutilasSys {
 		int irq;
 		int softirq;
 		int steal;
-//		int totIdle;
-//		int prevTotIdle = 0;
-//		int nonIdle;
-//		int prevNonIdle;
 		int total;
 		int prevTotal = 0;
 		int totalDiff;
-//		int idleDiff;
-		
 		int actv;
 		int prevActv = 0;
 		int actvDiff;
@@ -88,6 +82,11 @@ public class JutilasSys {
 				if (OS_NAME.contains("win")) {
 					if (Pattern.matches(regex, stdo)) {
 						br.close();
+						try {
+							Thread.sleep(timeSleep);
+						} catch (InterruptedException e) {
+							e.printStackTrace();
+						}
 						return Double.valueOf(stdo);
 					}
 				} else {
@@ -102,30 +101,18 @@ public class JutilasSys {
 						softirq = Integer.valueOf(matcher.group(7));
 						steal = Integer.valueOf(matcher.group(8));
 						
-//						totIdle = idle + iowait;
-//						nonIdle = user + nice + system + irq + softirq + steal;
-//						total = totIdle + nonIdle;
-						
 						actv = user + nice + system + irq + softirq + steal;
 						total = actv + idle + iowait; 
 						
 						if (i == 0) {
-//							prevTotal = total;
-//							prevTotIdle = totIdle;
-							
 							prevActv = actv;
 							prevTotal = total;
 						} else {
-//							totalDiff = total - prevTotal;
-//							idleDiff = totIdle - prevTotIdle;
-							
 							totalDiff = (total - prevTotal);
 							actvDiff = (actv - prevActv);
 							
-//							CPU_Percentage = (totalDiff - idleDiff)/totalDiff;
 							br.close();
 							return (100 * actvDiff)/totalDiff;
-							
 						}
 						
 					}
