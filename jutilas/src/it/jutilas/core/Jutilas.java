@@ -10,15 +10,12 @@ import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Properties;
-import java.util.stream.Stream;
 
 import it.jutilas.exception.FileException;
 
@@ -153,7 +150,8 @@ public class Jutilas {
 									+ "Messaggio: " + e.getMessage());
 		}
 	}
-	
+
+	/* metodo per rinominare file */
 	public void renameFile(String filePath, String newName) throws FileException {
 		Path file = Paths.get(filePath);
 		if (!file.toFile().exists())
@@ -162,10 +160,12 @@ public class Jutilas {
 		file.toFile().renameTo(new File(newPathFile));
 	}
 
+	/* metodo che restituisce stringa del contenuto del file */
 	public String readFile(String filePath) throws FileException {
 		return readFile(new File(filePath)); 
 	}
 
+	/* metodo che restituisce stringa del contenuto del file */
 	public String readFile(File file) throws FileException {
 		BufferedReader br = null;
 		char[] textOut = null;
@@ -193,19 +193,7 @@ public class Jutilas {
 		return String.valueOf(textOut); 
 	}
 
-	// TODO not work
-	public String readFileTest(String filePath) {
-		StringBuilder contentBuilder = new StringBuilder();
-
-		try (Stream<String> stream = Files.lines(Paths.get(filePath), StandardCharsets.UTF_8)) {
-			stream.forEach(s -> contentBuilder.append(s).append("\n"));
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-
-		return contentBuilder.toString();
-	}
-
+	/* metodo che restituisce stringa del contenuto del file */
 	public String readRandomAccessFile(File file) throws FileException {
 		StringBuffer textOut = new StringBuffer();
 		RandomAccessFile raf = null;
@@ -229,7 +217,8 @@ public class Jutilas {
 		}
 		return textOut.toString();
 	}
-	
+
+	/* metodo che restituisce stringa della path inserita in ingresso */
 	public String getStringPath (String... path) {
 		if (path.length == 1)
 			return path[0];
@@ -241,28 +230,23 @@ public class Jutilas {
 			return Paths.get(path[0], pathNxt).toString();
 		}
 	}
-	
-	public void openFileExplore(String... path) throws IOException {
+
+	/* metodo che apre file explorer di sistema */
+	public void openFileExplorer(String... path) throws IOException {
 		Desktop.getDesktop().open(new File(getStringPath(path)));
+	}
+
+	/* metodo che apre text editor di sistema */
+	public void openTextEditor(String... path) throws IOException {
+		Desktop.getDesktop().edit(new File(getStringPath(path)));
 	}
 
 	/* metodo che riavvia l'applicazione */
 	public void restartApp() throws URISyntaxException, IOException {
 		final String javaBin = Paths.get(System.getProperty("java.home"), "bin", "java").toString();
 		
-//		List<String> vmArguments = ManagementFactory.getRuntimeMXBean().getInputArguments();
-//		StringBuffer vmArgsOneLine = new StringBuffer();
-//		for (String arg : vmArguments) {
-//			// if it's the agent argument : we ignore it otherwise the
-//			// address of the old application and the new one will be in conflict
-//			if (!arg.contains("-agentlib")) {
-//				vmArgsOneLine.append(arg);
-//				vmArgsOneLine.append(" ");
-//			}
-//		}
 		final ArrayList<String> cmnd = new ArrayList<String>();
 		cmnd.add(javaBin);
-//		cmd.add(vmArgsOneLine);
 		String[] mainCommand = System.getProperty("sun.java.command").split(" ");
 		if (mainCommand[0].endsWith(".jar")) {
 			cmnd.add("-jar");
