@@ -10,6 +10,8 @@ import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.nio.file.CopyOption;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -146,6 +148,16 @@ public class Jutilas {
 														+ "Messaggio: " + e.getMessage());
 				}
 			}
+			throw new FileException("Errore!!! Impossibile lavorare sul file: " + filePath + "\n"
+									+ "Messaggio: " + e.getMessage());
+		}
+	}
+
+	/* metodo per copiare file */
+	public void copyFile(String filePath, String toPath, CopyOption... copyOptions) throws FileException {
+		try {
+			Files.copy(Paths.get(filePath), Paths.get(toPath), copyOptions);
+		} catch (IOException e) {
 			throw new FileException("Errore!!! Impossibile lavorare sul file: " + filePath + "\n"
 									+ "Messaggio: " + e.getMessage());
 		}
