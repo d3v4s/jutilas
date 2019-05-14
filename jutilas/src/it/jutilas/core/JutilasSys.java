@@ -12,9 +12,9 @@ public class JutilasSys {
 	private final String OS_NAME = System.getProperty("os.name").toLowerCase();
 	private final String OS_ARCH = System.getProperty("os.arch").toLowerCase();
 	private final String OS_USR = System.getProperty("user.name");
-	private final String HOME_USR_PATH = OS_NAME.contains("linux") || OS_NAME.contains("nix") ? "/home/" + OS_USR :
-										OS_NAME.contains("mac") ? "/Users/" + OS_USR :
-										OS_NAME.contains("win") ? "C:\\Users\\" + OS_USR :"";
+	private final String HOME_USR_PATH = isLinux() ? "/home/" + OS_USR :
+										isMac() ? "/Users/" + OS_USR :
+										isWindows() ? "C:\\Users\\" + OS_USR :"";
 
 	private JutilasSys() {
 	}
@@ -45,11 +45,11 @@ public class JutilasSys {
 	public double getSystemLoadAdverage(int timeSleep) throws IOException {
 		String regex;
 		String[] cmnd;
-		if (OS_NAME.contains("win")) {
+		if (isWindows()) {
 			regex = ".*[\\d]{1,}[.]{0,1}[\\d]{0,}.*";
 			cmnd = new String[] {"wmic", "cpu", "get", "loadpercentage"};
 		} else {
-			regex = "cpu[\\s]{1,}([\\d]{1,})[\\s]{1,}([\\d]{1,})[\\s]{1,}([\\d]{1,})[\\s]{1,}([\\d]{1,})[\\s]{1,}([\\d]{1,})[\\s]{1,}([\\d]{1,})[\\s]{1,}([\\d]{1,})[\\s]{1,}([\\d]{1,})[\\s]{1,}([\\d]{1,})[\\s]{1,}([\\d]{1,})";
+			regex = ".*cpu[\\s]{1,}([\\d]{1,})[\\s]{1,}([\\d]{1,})[\\s]{1,}([\\d]{1,})[\\s]{1,}([\\d]{1,})[\\s]{1,}([\\d]{1,})[\\s]{1,}([\\d]{1,})[\\s]{1,}([\\d]{1,})[\\s]{1,}([\\d]{1,})[\\s]{1,}([\\d]{1,})[\\s]{1,}([\\d]{1,}).*";
 			cmnd = new String[] {"grep", "cpu ", "/proc/stat"};
 		}
 		int idle;
@@ -74,19 +74,21 @@ public class JutilasSys {
 		for (int i = 0; i < 2; i++ ) {
 			pb = new ProcessBuilder(cmnd);
 			pb.redirectErrorStream(true);
+			if (isWindows()) {
+				try {
+					Thread.sleep(timeSleep);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+			}
 			prcss = pb.start();
 			isr = new InputStreamReader(prcss.getInputStream());
 			br = new BufferedReader(isr);
 			stdo = null;
 			while ((stdo = br.readLine()) != null) {
-				if (OS_NAME.contains("win")) {
+				if (isWindows()) {
 					if (Pattern.matches(regex, stdo)) {
 						br.close();
-						try {
-							Thread.sleep(timeSleep);
-						} catch (InterruptedException e) {
-							e.printStackTrace();
-						}
 						return Double.valueOf(stdo);
 					}
 				} else {
@@ -126,5 +128,17 @@ public class JutilasSys {
 			}
 		}
 		return -1;
+	}
+
+	public boolean isLinux() {
+		return OS_NAME.contains("linux") || OS_NAME.contains("nix") ? true : false;
+	}
+
+	public boolean isMac() {
+		return OS_NAME.contains("mac") ? true : false;
+	}
+
+	public boolean isWindows() {
+		return OS_NAME.contains("win") ? true : false;
 	}
 }
