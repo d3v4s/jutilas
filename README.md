@@ -1,2 +1,2 @@
-# utilas
+# Jutilas
 Utils for Java
