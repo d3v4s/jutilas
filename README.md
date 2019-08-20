@@ -1,4 +1,4 @@
 # Jutilas
 Utils for Java
 
-Libreria con metodi utili allo sviluppo di un'applicazione Java.
+Libreria per lo sviluppo di un'applicazione Java.
