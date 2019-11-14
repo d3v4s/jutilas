@@ -5,14 +5,19 @@ import java.net.ServerSocket;
 
 import it.jutilas.exception.NetworkExcepiton;
 
+/**
+ * Class with utils for network
+ * @author Andrea Serra
+ *
+ */
 public class JutilasNet {
 	private static JutilasNet networkAS;
 
-	/* constructor */
+	/* CONSTRUCTOR */
 	private JutilasNet() {
 	}
 
-	/* singleton */
+	/* SINGLETON */
 	public static JutilasNet getInstance() {
 		return (networkAS = (networkAS == null) ? new JutilasNet() : networkAS);
 	}

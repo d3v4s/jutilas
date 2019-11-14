@@ -21,14 +21,19 @@ import java.util.Properties;
 
 import it.jutilas.exception.FileException;
 
+/**
+ * Class with utils method for application development
+ * @author Andrea Serra
+ *
+ */
 public class Jutilas {
 	private static Jutilas jutilas;
 
-	/* constructor */
+	/* CONSTRUCTOR */
 	private Jutilas() {
 	}
 
-	/* singleton */
+	/* SINGLETON */
 	public static Jutilas getInstance() {
 		return (jutilas = (jutilas == null) ? new Jutilas() : jutilas);
 	}

@@ -6,6 +6,11 @@ import java.io.InputStreamReader;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+/**
+ * Class with utils for the system
+ * @author Andrea Serra
+ *
+ */
 public class JutilasSys {
 	private static JutilasSys jutilasSys;
 	private final String RUN_PATH = System.getProperty("user.dir");
@@ -16,16 +21,18 @@ public class JutilasSys {
 										isMac() ? "/Users/" + OS_USR :
 										isWindows() ? "C:\\Users\\" + OS_USR : "";
 
-	/* constructor */
+	/* CONTRUCTOR */
 	private JutilasSys() {
 	}
 
-	/* singleton */
+	/* SINGLETON */
 	public static JutilasSys getInstance() {
 		return jutilasSys = jutilasSys == null ? new JutilasSys() : jutilasSys;
 	}
 
+	/* ################################################################################# */
 	/* START GET */
+	/* ################################################################################# */
 
 	/**
 	 * method that get the run path
@@ -67,9 +74,11 @@ public class JutilasSys {
 		return PATH_USR_HOME;
 	}
 
+	/* ################################################################################# */
 	/* END GET */
+	/* ################################################################################# */
 
-	/* metodo che ritorna la percentuale di carico sulla cpu in base al tempo inserito */
+	/* metodo che ritorna la media di carico sulla cpu in base al tempo inserito */
 	/**
 	 * method that return the cpu load average, based on timesleep
 	 * @param timeSleep time sleep
