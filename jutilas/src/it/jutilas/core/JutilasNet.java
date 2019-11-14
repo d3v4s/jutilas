@@ -8,28 +8,40 @@ import it.jutilas.exception.NetworkExcepiton;
 public class JutilasNet {
 	private static JutilasNet networkAS;
 
+	/* constructor */
 	private JutilasNet() {
 	}
 
 	/* singleton */
 	public static JutilasNet getInstance() {
-		networkAS = (networkAS == null) ? new JutilasNet() : networkAS;
 		return (networkAS = (networkAS == null) ? new JutilasNet() : networkAS);
 	}
 
 	/* metodo che crea e ritorna un ServerSocket della prima porta disponibile di quelle passate in ingresso */
-	public ServerSocket createServerSocket(int... listPort) throws NetworkExcepiton {
-		for (int i : listPort)
+	/**
+	 * method that create a local socket with first available port
+	 * @param portList to create a socket
+	 * @return local socket
+	 * @throws NetworkExcepiton
+	 */
+	public ServerSocket createServerSocket(int... portList) throws NetworkExcepiton {
+		for (int i : portList) {
 			try {
 				return new ServerSocket(i);
 			} catch (IOException e) {
 				continue;
 			}
-		
-		throw new NetworkExcepiton("Nessuna porta, di quelle passate come argomento, e' diponibile");
+		}
+
+		throw new NetworkExcepiton("No port is available");
 	}
 
 	/* metodo che controlla se la porta locale e' disponibile */
+	/**
+	 * method who check if the local port is available
+	 * @param port to check
+	 * @return true if available, else false
+	 */
 	public boolean isAvaiblePort(int port) {
 		try {
 			new ServerSocket(port).close();;

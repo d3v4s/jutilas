@@ -12,10 +12,11 @@ public class JutilasSys {
 	private final String OS_NAME = System.getProperty("os.name").toLowerCase();
 	private final String OS_ARCH = System.getProperty("os.arch").toLowerCase();
 	private final String OS_USR = System.getProperty("user.name");
-	private final String HOME_USR_PATH = isLinux() ? "/home/" + OS_USR :
+	private final String PATH_USR_HOME = isLinux() ? "/home/" + OS_USR :
 										isMac() ? "/Users/" + OS_USR :
-										isWindows() ? "C:\\Users\\" + OS_USR :"";
+										isWindows() ? "C:\\Users\\" + OS_USR : "";
 
+	/* constructor */
 	private JutilasSys() {
 	}
 
@@ -24,25 +25,58 @@ public class JutilasSys {
 		return jutilasSys = jutilasSys == null ? new JutilasSys() : jutilasSys;
 	}
 
-	/* get */
+	/* START GET */
+
+	/**
+	 * method that get the run path
+	 * @return run path
+	 */
 	public String getRunPath() {
 		return RUN_PATH;
 	}
+
+	/**
+	 * method that get the OS name
+	 * @return OS name
+	 */
 	public String getOsName() {
 		return OS_NAME;
 	}
+
+	/**
+	 * method that get the OS architecture
+	 * @return OS architecture
+	 */
 	public String getOsArch() {
 		return OS_ARCH;
 	}
+
+	/**
+	 * method that get name of user who run the application
+	 * @return name of user
+	 */
 	public String getOsUser() {
 		return OS_USR;
 	}
-	public String getUsrHomePath() {
-		return HOME_USR_PATH;
+
+	/**
+	 * method that get the path of user home
+	 * @return path of user home
+	 */
+	public String getPathUsrHome() {
+		return PATH_USR_HOME;
 	}
 
+	/* END GET */
+
 	/* metodo che ritorna la percentuale di carico sulla cpu in base al tempo inserito */
-	public double getSystemLoadAdverage(int timeSleep) throws IOException {
+	/**
+	 * method that return the cpu load average, based on timesleep
+	 * @param timeSleep time sleep
+	 * @return cpu load average
+	 * @throws IOException
+	 */
+	public double getSystemLoadAverage(int timeSleep) throws IOException {
 		String regex;
 		String[] cmnd;
 		if (isWindows()) {
@@ -130,14 +164,26 @@ public class JutilasSys {
 		return -1;
 	}
 
+	/**
+	 * method that check if OS is GNU/Linux or Unix-like
+	 * @return true if is GNU/Linux or Unix-like, else false
+	 */
 	public boolean isLinux() {
 		return OS_NAME.contains("linux") || OS_NAME.contains("nix") ? true : false;
 	}
 
+	/**
+	 * method that check if OS is Mac
+	 * @return true if is Mac, else false
+	 */
 	public boolean isMac() {
 		return OS_NAME.contains("mac") ? true : false;
 	}
 
+	/**
+	 * method that check if OS is Winzozz
+	 * @return true if is Winzzoz, else false
+	 */
 	public boolean isWindows() {
 		return OS_NAME.contains("win") ? true : false;
 	}
