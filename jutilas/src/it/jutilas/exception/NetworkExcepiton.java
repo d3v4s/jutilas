@@ -1,5 +1,10 @@
 package it.jutilas.exception;
 
+/**
+ * Class for network exception
+ * @author Andrea Serra
+ *
+ */
 public class NetworkExcepiton extends Exception {
 	private static final long serialVersionUID = 6698297296335302417L;
 

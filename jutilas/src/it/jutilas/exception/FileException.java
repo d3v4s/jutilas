@@ -1,5 +1,10 @@
 package it.jutilas.exception;
 
+/**
+ * Class for file exception
+ * @author Andrea Serra
+ *
+ */
 public class FileException extends java.lang.Exception {
 	private static final long serialVersionUID = -6811904031273058744L;
 
