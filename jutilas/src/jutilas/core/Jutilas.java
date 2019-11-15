@@ -1,4 +1,4 @@
-package it.jutilas.core;
+package jutilas.core;
 
 import java.awt.Desktop;
 import java.io.BufferedReader;
@@ -19,7 +19,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Properties;
 
-import it.jutilas.exception.FileException;
+import jutilas.exception.FileException;
 
 /**
  * Class with utils method for application development
@@ -92,8 +92,7 @@ public class Jutilas {
 			FileOutputStream fos = new FileOutputStream(new File(filePath));
 			prop.store(fos, head);
 		} catch (IOException e) {
-			throw new FileException("Error!!! Impossible to work on file: " + filePath + "\n"
-												+ "Error message: " + e.getMessage());
+			throw new FileException("Error!!! Impossible to work on file: " + filePath + "\nError message: " + e.getMessage());
 		}
 	}
 
@@ -113,8 +112,7 @@ public class Jutilas {
 			prop.load(fis);
 			return prop.getProperty(param);
 		} catch (IOException e) {
-			throw new FileException("Error!!! Impossible to work on file: " + filePath + "\n"
-												+ "Error message: " + e.getMessage());
+			throw new FileException("Error!!! Impossible to work on file: " + filePath + "\nError message: " + e.getMessage());
 		}
 	}
 
@@ -185,12 +183,10 @@ public class Jutilas {
 				try {
 					raf.close();
 				} catch (IOException e1) {
-					throw new FileException("Errore!!! File: " + filePath + "\n"
-														+ "Error message: " + e.getMessage());
+					throw new FileException("Errore!!! File: " + filePath + "\nError message: " + e.getMessage());
 				}
 			}
-			throw new FileException("Errore!!! Impossible to work on file: " + filePath + "\n"
-									+ "Error message: " + e.getMessage());
+			throw new FileException("Errore!!! Impossible to work on file: " + filePath + "\nError message: " + e.getMessage());
 		}
 	}
 
@@ -206,8 +202,7 @@ public class Jutilas {
 		try {
 			Files.copy(Paths.get(filePath), Paths.get(toPath), copyOptions);
 		} catch (IOException e) {
-			throw new FileException("Errore!!! Impossible to work on file: " + filePath + "\n"
-									+ "Error message: " + e.getMessage());
+			throw new FileException("Errore!!! Impossible to work on file: " + filePath + "\nError message: " + e.getMessage());
 		}
 	}
 
@@ -254,17 +249,14 @@ public class Jutilas {
 			try {
 				br.close();
 			} catch (IOException e1) {
-				throw new FileException("Impossible to work on file:\n"
-						+ "Error message: " + e1.getMessage());
+				throw new FileException("Impossible to work on file:\nError message: " + e1.getMessage());
 			}
-			throw new FileException("Impossible to work on file.\n"
-					+ "Error message: " + e.getMessage());
+			throw new FileException("Impossible to work on file.\nError message: " + e.getMessage());
 		} finally {
 			try {
 				br.close();
 			} catch (IOException e) {
-				throw new FileException("Impossible to work on file.\n"
-						+ "Error message: " + e.getMessage());
+				throw new FileException("Impossible to work on file.\nError message: " + e.getMessage());
 			}
 		}
 		return String.valueOf(textOut); 
@@ -289,8 +281,7 @@ public class Jutilas {
 				raf.close();
 			} catch (IOException e1) {
 			}
-			throw new FileException("Impossible to work on file.\n"
-										+ "Error message: " + e.getMessage());
+			throw new FileException("Impossible to work on file.\nError message: " + e.getMessage());
 		} finally {
 			try {
 				raf.close();

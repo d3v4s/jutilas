@@ -1,4 +1,4 @@
-package it.jutilas.exception;
+package jutilas.exception;
 
 /**
  * Class for network exception

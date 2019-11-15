@@ -1,9 +1,9 @@
-package it.jutilas.core;
+package jutilas.core;
 
 import java.io.IOException;
 import java.net.ServerSocket;
 
-import it.jutilas.exception.NetworkExcepiton;
+import jutilas.exception.NetworkExcepiton;
 
 /**
  * Class with utils for network
