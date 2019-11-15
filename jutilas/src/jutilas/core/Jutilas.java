@@ -161,7 +161,7 @@ public class Jutilas {
 		if (!(file.exists() && file.isFile() && file.canRead())) throw new FileException("Errore!!! Impossible to work on file: " + filePath);
 		try {
 			raf = new RandomAccessFile(file, "r");
-			long fileLenght = raf.length() - 1;
+			long fileLenght = raf.length()-1;
 			StringBuilder sb = new StringBuilder();
 			int line = 0;
 			for (long filePointer = fileLenght; filePointer != -1; filePointer--) {
