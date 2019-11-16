@@ -293,7 +293,7 @@ public class Jutilas {
 
 	/* metodo che restituisce stringa della path inserita in ingresso */
 	/**
-	 * method that return the string of the path formatted for OS 
+	 * method that return the string of the path formatted for OS
 	 * @param path list
 	 * @return string of the path
 	 */
@@ -323,7 +323,7 @@ public class Jutilas {
 	 * @throws IOException
 	 */
 	public void openTextEditor(String... path) throws IOException {
-		Desktop.getDesktop().edit(new File(getStringPath(path)));
+		Desktop.getDesktop().open(new File(getStringPath(path)));
 	}
 
 	/* metodo che riavvia l'applicazione */
