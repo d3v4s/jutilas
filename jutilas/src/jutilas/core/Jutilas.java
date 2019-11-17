@@ -126,7 +126,7 @@ public class Jutilas {
 		/* se l'istanza del file e' un file o una directory vuota, viene eliminato */
 		if (f.exists() && (f.isFile() || (f.isDirectory() && isEmptyDirectory(f)))) f.delete();
 		/* invece se e' una directory che contiene file listiamo il file contenuti al suo interno */
-		else if(f.isDirectory() && !isEmptyDirectory(f)) {
+		else if (f.isDirectory() && !isEmptyDirectory(f)) {
 			File[] files = f.listFiles();
 			for(File file : files) recursiveDelete(file.getPath());
 			f.delete();
@@ -142,7 +142,7 @@ public class Jutilas {
 	public boolean isEmptyDirectory(File file) {
         if (file.isDirectory()) {
         	File[] files = file.listFiles();
-        	if(!(files.length > 0)) return true;
+        	if (!(files.length > 0)) return true;
         }
         return false;
 	}
