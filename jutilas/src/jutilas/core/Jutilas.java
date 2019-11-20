@@ -329,14 +329,6 @@ public class Jutilas {
 		for (String string : listFilesPath) recursiveDelete(Paths.get(basePath, string).toString());
 	}
 
-	public static void main(String[] args) {
-		try {
-			Jutilas.getInstance().emptyDirectory("test");
-		} catch (FileException e) {
-			e.printStackTrace();
-		}
-	}
-
 	/* metodo che riavvia l'applicazione */
 	/**
 	 * method that reboot the application
