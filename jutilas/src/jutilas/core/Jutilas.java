@@ -312,7 +312,7 @@ public class Jutilas {
 	 * @param path of file to be opened
 	 * @throws IOException
 	 */
-	public void openFile(String... path) throws IOException {
+	public void openFileFromOS(String... path) throws IOException {
 		Desktop.getDesktop().open(new File(getStringPath(path)));
 	}
 
