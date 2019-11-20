@@ -92,7 +92,7 @@ public class Jutilas {
 			FileOutputStream fos = new FileOutputStream(new File(filePath));
 			prop.store(fos, head);
 		} catch (IOException e) {
-			throw new FileException("Error!!! Impossible to work on file: " + filePath + "\nError message: " + e.getMessage());
+			throw new FileException("Error!!! Unable to work on file: " + filePath + "\nError message: " + e.getMessage());
 		}
 	}
 
@@ -112,7 +112,7 @@ public class Jutilas {
 			prop.load(fis);
 			return prop.getProperty(param);
 		} catch (IOException e) {
-			throw new FileException("Error!!! Impossible to work on file: " + filePath + "\nError message: " + e.getMessage());
+			throw new FileException("Error!!! Unable to work on file: " + filePath + "\nError message: " + e.getMessage());
 		}
 	}
 
@@ -158,7 +158,7 @@ public class Jutilas {
 	public String getLastRowsFile(String filePath, int numRows) throws FileException {
 		File file = new File(filePath);
 		RandomAccessFile raf = null;
-		if (!(file.exists() && file.isFile() && file.canRead())) throw new FileException("Errore!!! Impossible to work on file: " + filePath);
+		if (!(file.exists() && file.isFile() && file.canRead())) throw new FileException("Errore!!! Unable to work on file: " + filePath);
 		try {
 			raf = new RandomAccessFile(file, "r");
 			long fileLenght = raf.length()-1;
@@ -186,7 +186,7 @@ public class Jutilas {
 					throw new FileException("Error!!! File: " + filePath + "\nError message: " + e.getMessage());
 				}
 			}
-			throw new FileException("Error!!! Impossible to work on file: " + filePath + "\nError message: " + e.getMessage());
+			throw new FileException("Error!!! Unable to work on file: " + filePath + "\nError message: " + e.getMessage());
 		}
 	}
 
@@ -249,14 +249,14 @@ public class Jutilas {
 			try {
 				br.close();
 			} catch (IOException e1) {
-				throw new FileException("Impossible to work on file:\nError message: " + e1.getMessage());
+				throw new FileException("Unable to work on file:\nError message: " + e1.getMessage());
 			}
-			throw new FileException("Impossible to work on file.\nError message: " + e.getMessage());
+			throw new FileException("Unable to work on file.\nError message: " + e.getMessage());
 		} finally {
 			try {
 				br.close();
 			} catch (IOException e) {
-				throw new FileException("Impossible to work on file.\nError message: " + e.getMessage());
+				throw new FileException("Unable to work on file.\nError message: " + e.getMessage());
 			}
 		}
 		return String.valueOf(textOut); 
@@ -281,7 +281,7 @@ public class Jutilas {
 				raf.close();
 			} catch (IOException e1) {
 			}
-			throw new FileException("Impossible to work on file.\nError message: " + e.getMessage());
+			throw new FileException("Unable to work on file.\nError message: " + e.getMessage());
 		} finally {
 			try {
 				raf.close();
@@ -297,7 +297,7 @@ public class Jutilas {
 	 * @param path list
 	 * @return string of the path
 	 */
-	public String getStringPath (String... path) {
+	public String getStringPath(String... path) {
 		if (path.length == 1) return path[0];
 		else {
 			String[] pathNxt = new String[path.length - 1];
@@ -306,24 +306,35 @@ public class Jutilas {
 		}
 	}
 
-	/* metodo che apre file explorer di sistema */
+	/* metodo che apre un file con l'applicazione predefinita dal OS */
 	/**
-	 * method that open the system file explorer  
-	 * @param path to open in the file explorer
+	 * method that opens a file with the default application from the OS
+	 * @param path of file to be opened
 	 * @throws IOException
 	 */
-	public void openFileExplorer(String... path) throws IOException {
+	public void openFile(String... path) throws IOException {
 		Desktop.getDesktop().open(new File(getStringPath(path)));
 	}
 
-	/* metodo che apre text editor di sistema */
 	/**
-	 * methos that open the system text editor
-	 * @param path of file to open in the text editor
-	 * @throws IOException
+	 * method that empty a directory
+	 * @param path of directory to be emptied
+	 * @throws FileException 
 	 */
-	public void openTextEditor(String... path) throws IOException {
-		Desktop.getDesktop().open(new File(getStringPath(path)));
+	public void emptyDirectory(String... path) throws FileException {
+		File dir = new File(getStringPath(path));
+		if (!dir.isDirectory()) throw new FileException("Error!!! The file is not a folder.");
+		String basePath = dir.getAbsolutePath();
+		String[] listFilesPath = dir.list();
+		for (String string : listFilesPath) recursiveDelete(Paths.get(basePath, string).toString());
+	}
+
+	public static void main(String[] args) {
+		try {
+			Jutilas.getInstance().emptyDirectory("test");
+		} catch (FileException e) {
+			e.printStackTrace();
+		}
 	}
 
 	/* metodo che riavvia l'applicazione */
@@ -335,7 +346,7 @@ public class Jutilas {
 	public void restartApp() throws URISyntaxException, IOException {
 		final String javaBin = Paths.get(System.getProperty("java.home"), "bin", "java").toString();
 		
-		final ArrayList<String> cmnd = new ArrayList<String>();
+		ArrayList<String> cmnd = new ArrayList<String>();
 		cmnd.add(javaBin);
 		String[] mainCommand = System.getProperty("sun.java.command").split(" ");
 		if (mainCommand[0].endsWith(".jar")) {
