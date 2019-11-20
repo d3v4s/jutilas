@@ -183,10 +183,10 @@ public class Jutilas {
 				try {
 					raf.close();
 				} catch (IOException e1) {
-					throw new FileException("Errore!!! File: " + filePath + "\nError message: " + e.getMessage());
+					throw new FileException("Error!!! File: " + filePath + "\nError message: " + e.getMessage());
 				}
 			}
-			throw new FileException("Errore!!! Impossible to work on file: " + filePath + "\nError message: " + e.getMessage());
+			throw new FileException("Error!!! Impossible to work on file: " + filePath + "\nError message: " + e.getMessage());
 		}
 	}
 
@@ -202,7 +202,7 @@ public class Jutilas {
 		try {
 			Files.copy(Paths.get(filePath), Paths.get(toPath), copyOptions);
 		} catch (IOException e) {
-			throw new FileException("Errore!!! Impossible to work on file: " + filePath + "\nError message: " + e.getMessage());
+			throw new FileException("Error!!! Copy file failed: " + filePath + "\nError message: " + e.getMessage());
 		}
 	}
 
@@ -215,7 +215,7 @@ public class Jutilas {
 	 */
 	public void renameFile(String filePath, String newName) throws FileException {
 		Path file = Paths.get(filePath);
-		if (!file.toFile().exists()) throw new FileException("Errore!!! \"" + filePath + "\" file does not exist.");
+		if (!file.toFile().exists()) throw new FileException("Error!!! \"" + filePath + "\" file does not exist.");
 		String newPathFile = file.toString().replaceFirst(file.getFileName() + "$", newName);
 		file.toFile().renameTo(new File(newPathFile));
 	}
