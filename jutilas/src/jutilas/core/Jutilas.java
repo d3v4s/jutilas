@@ -17,6 +17,7 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.List;
 import java.util.Properties;
 
 import jutilas.exception.FileException;
@@ -45,7 +46,7 @@ public class Jutilas {
 	 * method that order a list ignoring case
 	 * @param list to order
 	 */
-	public void sortIgnoreCase(ArrayList<String> list) {
+	public void sortIgnoreCase(List<String> list) {
 		Collections.sort(list, new Comparator<Object>() {
 			public int compare(Object o1, Object o2) {
 				String s1 = (String) o1;
