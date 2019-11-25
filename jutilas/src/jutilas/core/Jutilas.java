@@ -39,6 +39,9 @@ public class Jutilas {
 		return (jutilas = (jutilas == null) ? new Jutilas() : jutilas);
 	}
 
+	/* ################################################################################# */
+	/* START VARIUS METHODS */
+	/* ################################################################################# */
 
 	/* metodo che ordina lista string in ignorando maiuscole e minuscole */
 	/* method that order a list ignoring case */
@@ -54,23 +57,6 @@ public class Jutilas {
 	            return s1.compareToIgnoreCase(s2);
 			}
 		});
-	}
-
-	/* metodo per aprire il browser di default con l'url passato */
-	/* method that open the default browser with URL */
-	/**
-	 * method that open the default browser with URL
-	 * @param URL to open on browser
-	 * @return true if success, else false
-	 * @throws IOException
-	 * @throws URISyntaxException
-	 */
-	public boolean openBrowser(String URL) throws IOException, URISyntaxException {
-		Desktop desktop = Desktop.isDesktopSupported() ? Desktop.getDesktop() : null;
-		if (desktop != null && desktop.isSupported(Desktop.Action.BROWSE)) {
-			desktop.browse(new URI(URL));
-			return true;
-		} else return false;
 	}
 
 	/* metodo per settare un' impostazione nel file di conf */
@@ -117,79 +103,92 @@ public class Jutilas {
 		}
 	}
 
-	/* metodo per eliminare file o directory con sub directory */
+	/* metodo che restituisce stringa della path inserita in ingresso */
 	/**
-	 * method that delete file and directory recursive
-	 * @param filePath of file to want delete
+	 * method that return the string of the path formatted for OS
+	 * @param path list
+	 * @return string of the path
 	 */
-	public void recursiveDelete(String filePath) {
-		File f = new File(filePath);
-		/* se l'istanza del file e' un file o una directory vuota, viene eliminato */
-		if (f.exists() && (f.isFile() || (f.isDirectory() && isEmptyDirectory(f)))) f.delete();
-		/* invece se e' una directory che contiene file listiamo il file contenuti al suo interno */
-		else if (f.isDirectory() && !isEmptyDirectory(f)) {
-			File[] files = f.listFiles();
-			for(File file : files) recursiveDelete(file.getPath());
-			f.delete();
+	public String getStringPath(String... path) {
+		if (path.length == 1) return path[0];
+		else {
+			String[] pathNxt = new String[path.length - 1];
+			for (int i = 1; i < path.length; i++) pathNxt[i-1] = path[i];
+			return Paths.get(path[0], pathNxt).toString();
 		}
 	}
-	
-	/* metodo che ci dice se la directory e' vuota o contiene dei file */
+
+	/* metodo che riavvia l'applicazione */
 	/**
-	 * method that check if is empty directory
-	 * @param file to check
-	 * @return true if empty, else false
+	 * method that reboot the application
+	 * @throws URISyntaxException
+	 * @throws IOException
 	 */
-	public boolean isEmptyDirectory(File file) {
-        if (file.isDirectory()) {
-        	File[] files = file.listFiles();
-        	if (!(files.length > 0)) return true;
-        }
-        return false;
-	}
-
-	/* metodo che ritorna le ultime righe di un file */
-	/**
-	 * method that get last rows of a file
-	 * @param filePath of file
-	 * @param numRows to get
-	 * @return last rows of file
-	 * @throws FileException
-	 */
-	public String getLastRowsFile(String filePath, int numRows) throws FileException {
-		File file = new File(filePath);
-		RandomAccessFile raf = null;
-		if (!(file.exists() && file.isFile() && file.canRead())) throw new FileException("Errore!!! Unable to work on file: " + filePath);
-		try {
-			raf = new RandomAccessFile(file, "r");
-			long fileLenght = raf.length()-1;
-			StringBuilder sb = new StringBuilder();
-			int line = 0;
-			for (long filePointer = fileLenght; filePointer != -1; filePointer--) {
-				raf.seek(filePointer);
-				int readByte = raf.readByte();
-
-				if (readByte == 0xA) line = (filePointer < fileLenght) ? line + 1 : line;
-				else if (readByte == 0xD) line = (filePointer < fileLenght-1) ? line + 1 : line;
-
-				if (line >= numRows) break;
-				
-				sb.append((char) readByte);
-			}
-			if (raf != null) raf.close();
-
-			return sb.reverse().toString();
-		} catch (IOException e) {
-			if (raf != null) {
-				try {
-					raf.close();
-				} catch (IOException e1) {
-					throw new FileException("Error!!! File: " + filePath + "\nError message: " + e.getMessage());
-				}
-			}
-			throw new FileException("Error!!! Unable to work on file: " + filePath + "\nError message: " + e.getMessage());
+	public void restartApp() throws URISyntaxException, IOException {
+		final String javaBin = Paths.get(System.getProperty("java.home"), "bin", "java").toString();
+		
+		ArrayList<String> cmnd = new ArrayList<String>();
+		cmnd.add(javaBin);
+		String[] mainCommand = System.getProperty("sun.java.command").split(" ");
+		if (mainCommand[0].endsWith(".jar")) {
+			cmnd.add("-jar");
+			cmnd.add(new File(mainCommand[0]).getPath());
+		} else {
+			cmnd.add("-cp");
+			cmnd.add(System.getProperty("java.class.path"));
+			cmnd.add(mainCommand[0]);
 		}
+		for (int i = 1; i < mainCommand.length; i++) {
+			cmnd.add(mainCommand[i]);
+		}
+		
+		final ProcessBuilder builder = new ProcessBuilder(cmnd);
+		builder.start();
+		System.exit(0);
 	}
+
+	/* ################################################################################# */
+	/* END VARIUS METHODS */
+	/* ################################################################################# */
+
+	/* ################################################################################# */
+	/* START SYSTEM METHODS */
+	/* ################################################################################# */
+
+	/* metodo per aprire il browser di default con l'url passato */
+	/* method that open the default browser with URL */
+	/**
+	 * method that open the default browser with URL
+	 * @param URL to open on browser
+	 * @return true if success, else false
+	 * @throws IOException
+	 * @throws URISyntaxException
+	 */
+	public boolean openBrowser(String URL) throws IOException, URISyntaxException {
+		Desktop desktop = Desktop.isDesktopSupported() ? Desktop.getDesktop() : null;
+		if (desktop != null && desktop.isSupported(Desktop.Action.BROWSE)) {
+			desktop.browse(new URI(URL));
+			return true;
+		} else return false;
+	}
+
+	/* metodo che apre un file con l'applicazione predefinita dal OS */
+	/**
+	 * method that opens a file with the default application from the OS
+	 * @param path of file to be opened
+	 * @throws IOException
+	 */
+	public void openFileFromOS(String... path) throws IOException {
+		Desktop.getDesktop().open(new File(getStringPath(path)));
+	}
+
+	/* ################################################################################# */
+	/* END SYSTEM METHODS */
+	/* ################################################################################# */
+
+	/* ################################################################################# */
+	/* START FILES METHODS */
+	/* ################################################################################# */
 
 	/* metodo per copiare file */
 	/**
@@ -292,29 +291,64 @@ public class Jutilas {
 		return textOut.toString();
 	}
 
-	/* metodo che restituisce stringa della path inserita in ingresso */
+	/* metodo che ritorna le ultime righe di un file */
 	/**
-	 * method that return the string of the path formatted for OS
-	 * @param path list
-	 * @return string of the path
+	 * method that get last rows of a file
+	 * @param filePath of file
+	 * @param numRows to get
+	 * @return last rows of file
+	 * @throws FileException
 	 */
-	public String getStringPath(String... path) {
-		if (path.length == 1) return path[0];
-		else {
-			String[] pathNxt = new String[path.length - 1];
-			for (int i = 1; i < path.length; i++) pathNxt[i-1] = path[i];
-			return Paths.get(path[0], pathNxt).toString();
+	public String getLastRowsFile(String filePath, int numRows) throws FileException {
+		File file = new File(filePath);
+		RandomAccessFile raf = null;
+		if (!(file.exists() && file.isFile() && file.canRead())) throw new FileException("Errore!!! Unable to work on file: " + filePath);
+		try {
+			raf = new RandomAccessFile(file, "r");
+			long fileLenght = raf.length()-1;
+			StringBuilder sb = new StringBuilder();
+			int line = 0;
+			for (long filePointer = fileLenght; filePointer != -1; filePointer--) {
+				raf.seek(filePointer);
+				int readByte = raf.readByte();
+
+				if (readByte == 0xA) line = (filePointer < fileLenght) ? line + 1 : line;
+				else if (readByte == 0xD) line = (filePointer < fileLenght-1) ? line + 1 : line;
+
+				if (line >= numRows) break;
+				
+				sb.append((char) readByte);
+			}
+			if (raf != null) raf.close();
+
+			return sb.reverse().toString();
+		} catch (IOException e) {
+			if (raf != null) {
+				try {
+					raf.close();
+				} catch (IOException e1) {
+					throw new FileException("Error!!! File: " + filePath + "\nError message: " + e.getMessage());
+				}
+			}
+			throw new FileException("Error!!! Unable to work on file: " + filePath + "\nError message: " + e.getMessage());
 		}
 	}
 
-	/* metodo che apre un file con l'applicazione predefinita dal OS */
+	/* metodo per eliminare file o directory con sub directory */
 	/**
-	 * method that opens a file with the default application from the OS
-	 * @param path of file to be opened
-	 * @throws IOException
+	 * method that delete file and directory recursive
+	 * @param filePath of file to want delete
 	 */
-	public void openFileFromOS(String... path) throws IOException {
-		Desktop.getDesktop().open(new File(getStringPath(path)));
+	public void recursiveDelete(String filePath) {
+		File f = new File(filePath);
+		/* se l'istanza del file e' un file o una directory vuota, viene eliminato */
+		if (f.exists() && (f.isFile() || (f.isDirectory() && isEmptyDirectory(f)))) f.delete();
+		/* invece se e' una directory che contiene file listiamo il file contenuti al suo interno */
+		else if (f.isDirectory() && !isEmptyDirectory(f)) {
+			File[] files = f.listFiles();
+			for(File file : files) recursiveDelete(file.getPath());
+			f.delete();
+		}
 	}
 
 	/**
@@ -330,32 +364,22 @@ public class Jutilas {
 		for (String string : listFilesPath) recursiveDelete(Paths.get(basePath, string).toString());
 	}
 
-	/* metodo che riavvia l'applicazione */
+	
+	/* metodo che ci dice se la directory e' vuota o contiene dei file */
 	/**
-	 * method that reboot the application
-	 * @throws URISyntaxException
-	 * @throws IOException
+	 * method that check if is empty directory
+	 * @param file to check
+	 * @return true if empty, else false
 	 */
-	public void restartApp() throws URISyntaxException, IOException {
-		final String javaBin = Paths.get(System.getProperty("java.home"), "bin", "java").toString();
-		
-		ArrayList<String> cmnd = new ArrayList<String>();
-		cmnd.add(javaBin);
-		String[] mainCommand = System.getProperty("sun.java.command").split(" ");
-		if (mainCommand[0].endsWith(".jar")) {
-			cmnd.add("-jar");
-			cmnd.add(new File(mainCommand[0]).getPath());
-		} else {
-			cmnd.add("-cp");
-			cmnd.add(System.getProperty("java.class.path"));
-			cmnd.add(mainCommand[0]);
-		}
-		for (int i = 1; i < mainCommand.length; i++) {
-			cmnd.add(mainCommand[i]);
-		}
-		
-		final ProcessBuilder builder = new ProcessBuilder(cmnd);
-		builder.start();
-		System.exit(0);
+	public boolean isEmptyDirectory(File file) {
+        if (file.isDirectory()) {
+        	File[] files = file.listFiles();
+        	if (!(files.length > 0)) return true;
+        }
+        return false;
 	}
+
+	/* ################################################################################# */
+	/* START FILES METHODS */
+	/* ################################################################################# */
 }
