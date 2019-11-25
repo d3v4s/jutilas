@@ -3,6 +3,7 @@ package jutilas.core;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -20,6 +21,10 @@ public class JutilasSys {
 	private final String PATH_USR_HOME = isLinux() ? "/home/" + OS_USR :
 										isMac() ? "/Users/" + OS_USR :
 										isWindows() ? "C:\\Users\\" + OS_USR : "";
+	private BufferedReader br;
+	private int prevActv;
+	private int prevTotal;
+	private int i;
 
 	/* CONTRUCTOR */
 	private JutilasSys() {
@@ -88,87 +93,95 @@ public class JutilasSys {
 	public double getSystemLoadAverage(int timeSleep) throws IOException {
 		String regex;
 		String[] cmnd;
+		Function<String, Double> readLineFunction = null;
+		/* preset for windows and linux */
 		if (isWindows()) {
+			/* regex for windows */
 			regex = ".*[\\d]{1,}[.]{0,1}[\\d]{0,}.*";
+			/* comand for windows */
 			cmnd = new String[] {"wmic", "cpu", "get", "loadpercentage"};
-		} else {
-			regex = ".*cpu[\\s]{1,}([\\d]{1,})[\\s]{1,}([\\d]{1,})[\\s]{1,}([\\d]{1,})[\\s]{1,}([\\d]{1,})[\\s]{1,}([\\d]{1,})[\\s]{1,}([\\d]{1,})[\\s]{1,}([\\d]{1,})[\\s]{1,}([\\d]{1,})[\\s]{1,}([\\d]{1,})[\\s]{1,}([\\d]{1,}).*";
-			cmnd = new String[] {"grep", "cpu ", "/proc/stat"};
-		}
-		int idle;
-		int iowait;
-		int user;
-		int nice;
-		int system;
-		int irq;
-		int softirq;
-		int steal;
-		int total;
-		int prevTotal = 0;
-		int totalDiff;
-		int actv;
-		int prevActv = 0;
-		int actvDiff;
-		ProcessBuilder pb;
-		Process prcss;
-		InputStreamReader isr;
-		BufferedReader br;
-		String stdo;
-		for (int i = 0; i < 2; i++ ) {
-			pb = new ProcessBuilder(cmnd);
-			pb.redirectErrorStream(true);
-			if (isWindows()) {
-				try {
-					Thread.sleep(timeSleep);
-				} catch (InterruptedException e) {
-					e.printStackTrace();
-				}
-			}
-			prcss = pb.start();
-			isr = new InputStreamReader(prcss.getInputStream());
-			br = new BufferedReader(isr);
-			stdo = null;
-			while ((stdo = br.readLine()) != null) {
-				if (isWindows()) {
+			/* function to read output in windows */
+			readLineFunction = new Function<String, Double>() {
+				@Override
+				public Double apply(String stdo) {
 					if (Pattern.matches(regex, stdo)) {
-						br.close();
+						try {
+							br.close();
+						} catch (IOException e) {
+							e.printStackTrace();
+						}
 						return Double.valueOf(stdo);
 					}
-				} else {
+					return null;
+				}
+				
+			};
+		} else {
+			/* regex for linux */
+			regex = ".*cpu[\\s]{1,}([\\d]{1,})[\\s]{1,}([\\d]{1,})[\\s]{1,}([\\d]{1,})[\\s]{1,}([\\d]{1,})[\\s]{1,}([\\d]{1,})[\\s]{1,}([\\d]{1,})[\\s]{1,}([\\d]{1,})[\\s]{1,}([\\d]{1,})[\\s]{1,}([\\d]{1,})[\\s]{1,}([\\d]{1,}).*";
+			/* command for linux */
+			cmnd = new String[] {"grep", "cpu ", "/proc/stat"};
+			/* function to read output and calculate the load average in linux */ 
+			readLineFunction = new Function<String, Double>() {
+				@Override
+				public Double apply(String stdo) {
 					Matcher matcher = Pattern.compile(regex).matcher(stdo);
 					if (matcher.find()) {
-						user = Integer.valueOf(matcher.group(1));
-						nice = Integer.valueOf(matcher.group(2));
-						system = Integer.valueOf(matcher.group(3));
-						idle = Integer.valueOf(matcher.group(4));
-						iowait = Integer.valueOf(matcher.group(5));
-						irq = Integer.valueOf(matcher.group(6));
-						softirq = Integer.valueOf(matcher.group(7));
-						steal = Integer.valueOf(matcher.group(8));
+						int user = Integer.valueOf(matcher.group(1));
+						int nice = Integer.valueOf(matcher.group(2));
+						int system = Integer.valueOf(matcher.group(3));
+						int idle = Integer.valueOf(matcher.group(4));
+						int iowait = Integer.valueOf(matcher.group(5));
+						int irq = Integer.valueOf(matcher.group(6));
+						int softirq = Integer.valueOf(matcher.group(7));
+						int steal = Integer.valueOf(matcher.group(8));
 						
-						actv = user + nice + system + irq + softirq + steal;
-						total = actv + idle + iowait; 
+						int actv = user + nice + system + irq + softirq + steal;
+						int total = actv + idle + iowait; 
 						
 						if (i == 0) {
 							prevActv = actv;
 							prevTotal = total;
 						} else {
-							totalDiff = (total - prevTotal);
-							actvDiff = (actv - prevActv);
+							int totalDiff = (total - prevTotal);
+							int actvDiff = (actv - prevActv);
 							
-							br.close();
-							return (100 * actvDiff)/totalDiff;
+							try {
+								br.close();
+							} catch (IOException e) {
+								e.printStackTrace();
+							}
+							return Double.valueOf((100 * actvDiff)/totalDiff);
 						}
 						
 					}
+					return null;
 				}
-			}
-			br.close();
+			};
+		}
+
+		/* start process */
+		ProcessBuilder pb;
+		Process prcss;
+		InputStreamReader isr;
+		String stdo;
+		for (; i < 2; i++ ) {
 			try {
 				Thread.sleep(timeSleep);
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
+			pb = new ProcessBuilder(cmnd);
+			pb.redirectErrorStream(true);
+			prcss = pb.start();
+			isr = new InputStreamReader(prcss.getInputStream());
+			br = new BufferedReader(isr);
+			stdo = null;
+			while ((stdo = br.readLine()) != null) {
+				Double ret = readLineFunction.apply(stdo);
+				if (ret != null) return ret;
+			}
+			br.close();
 		}
 		return -1;
 	}
