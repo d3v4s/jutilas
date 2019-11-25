@@ -83,6 +83,38 @@ public class JutilasSys {
 	/* END GET */
 	/* ################################################################################# */
 
+	/* ################################################################################# */
+	/* START OS INFO */
+	/* ################################################################################# */
+
+	/**
+	 * method that check if OS is GNU/Linux or Unix-like
+	 * @return true if is GNU/Linux or Unix-like, else false
+	 */
+	public boolean isLinux() {
+		return OS_NAME.contains("linux") || OS_NAME.contains("nix") ? true : false;
+	}
+
+	/**
+	 * method that check if OS is Mac
+	 * @return true if is Mac, else false
+	 */
+	public boolean isMac() {
+		return OS_NAME.contains("mac") ? true : false;
+	}
+
+	/**
+	 * method that check if OS is Winzozz
+	 * @return true if is Winzzoz, else false
+	 */
+	public boolean isWindows() {
+		return OS_NAME.contains("win") ? true : false;
+	}
+
+	/* ################################################################################# */
+	/* END OS INFO */
+	/* ################################################################################# */
+
 	/* metodo che ritorna la media di carico sulla cpu in base al tempo inserito */
 	/**
 	 * method that return the cpu load average, based on timesleep
@@ -184,29 +216,5 @@ public class JutilasSys {
 			br.close();
 		}
 		return -1;
-	}
-
-	/**
-	 * method that check if OS is GNU/Linux or Unix-like
-	 * @return true if is GNU/Linux or Unix-like, else false
-	 */
-	public boolean isLinux() {
-		return OS_NAME.contains("linux") || OS_NAME.contains("nix") ? true : false;
-	}
-
-	/**
-	 * method that check if OS is Mac
-	 * @return true if is Mac, else false
-	 */
-	public boolean isMac() {
-		return OS_NAME.contains("mac") ? true : false;
-	}
-
-	/**
-	 * method that check if OS is Winzozz
-	 * @return true if is Winzzoz, else false
-	 */
-	public boolean isWindows() {
-		return OS_NAME.contains("win") ? true : false;
 	}
 }
