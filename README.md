@@ -1,12 +1,11 @@
 # Jutilas
 Utils for Java
 
-Jutilas is a Java library that contains a utils for the development of Java software.
+Jutilas is a Java library that contains a utils for the development of Java software.  
+Read the [wiki](https://github.com/d3v4s/jutilas/wiki).
 
-<h2>Classes</h2>
+## Classes
 This library contains three principal classes:
-<ul>
-  <li><b>Jutials</b>, for generic utils</li>
-  <li><b>JutialsNet</b>, for networking utils</li>
-  <li><b>JutialsSys</b>, for system utils</li>
-</ul>
+* **Jutials** , for generic utils
+* **JutialsNet**, for networking utils
+* **JutialsSys**, for system utils
