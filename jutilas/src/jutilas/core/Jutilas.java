@@ -113,7 +113,7 @@ public class Jutilas {
 		if (path.length == 1) return path[0];
 		else {
 			String[] pathNxt = new String[path.length - 1];
-			for (int i = 1; i < path.length; i++) pathNxt[i-1] = path[i];
+			for (int i = 1, length = path.length; i < length; i++) pathNxt[i-1] = path[i];
 			return Paths.get(path[0], pathNxt).toString();
 		}
 	}
@@ -121,10 +121,9 @@ public class Jutilas {
 	/* metodo che riavvia l'applicazione */
 	/**
 	 * method that reboot the application
-	 * @throws URISyntaxException
 	 * @throws IOException
 	 */
-	public void restartApp() throws URISyntaxException, IOException {
+	public void restartApp() throws IOException {
 		final String javaBin = Paths.get(System.getProperty("java.home"), "bin", "java").toString();
 		
 		ArrayList<String> cmnd = new ArrayList<String>();
@@ -178,8 +177,12 @@ public class Jutilas {
 	 * @param path of file to be opened
 	 * @throws IOException
 	 */
-	public void openFileFromOS(String... path) throws IOException {
-		Desktop.getDesktop().open(new File(getStringPath(path)));
+	public boolean openFileFromOS(String... path) throws IOException {
+		Desktop desktop = Desktop.isDesktopSupported() ? Desktop.getDesktop() : null;
+		if (desktop != null && desktop.isSupported(Desktop.Action.BROWSE)) {
+			Desktop.getDesktop().open(new File(getStringPath(path)));
+			return true;
+		} else return false;
 	}
 
 	/* ################################################################################# */
@@ -380,6 +383,6 @@ public class Jutilas {
 	}
 
 	/* ################################################################################# */
-	/* START FILES METHODS */
+	/* END FILES METHODS */
 	/* ################################################################################# */
 }

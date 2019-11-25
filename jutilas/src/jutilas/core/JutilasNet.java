@@ -47,7 +47,7 @@ public class JutilasNet {
 	 * @param port to check
 	 * @return true if available, else false
 	 */
-	public boolean isAvaiblePort(int port) {
+	public boolean isAvailablePort(int port) {
 		try {
 			new ServerSocket(port).close();;
 			return true;
