@@ -86,7 +86,7 @@ public class JutilasSys {
 	/* ################################################################################# */
 
 	/* ################################################################################# */
-	/* START OS INFO */
+	/* START OS TYPE */
 	/* ################################################################################# */
 
 	/**
@@ -114,7 +114,7 @@ public class JutilasSys {
 	}
 
 	/* ################################################################################# */
-	/* END OS INFO */
+	/* END OS TYPE */
 	/* ################################################################################# */
 
 	/* metodo che ritorna la media di carico sulla cpu in base al tempo inserito */
@@ -127,7 +127,7 @@ public class JutilasSys {
 	public double getSystemLoadAverage(int timeSleep) throws IOException {
 		/* LINUX PRESET */
 		/* regex and command for linux */
-		regex = ".*cpu[\\s]{1,}([\\d]{1,})[\\s]{1,}([\\d]{1,})[\\s]{1,}([\\d]{1,})[\\s]{1,}([\\d]{1,})[\\s]{1,}([\\d]{1,})[\\s]{1,}([\\d]{1,})[\\s]{1,}([\\d]{1,})[\\s]{1,}([\\d]{1,})[\\s]{1,}([\\d]{1,})[\\s]{1,}([\\d]{1,}).*";;
+		regex = ".*cpu[\\s]{1,}([\\d]{1,})[\\s]{1,}([\\d]{1,})[\\s]{1,}([\\d]{1,})[\\s]{1,}([\\d]{1,})[\\s]{1,}([\\d]{1,})[\\s]{1,}([\\d]{1,})[\\s]{1,}([\\d]{1,})[\\s]{1,}([\\d]{1,})[\\s]{1,}([\\d]{1,})[\\s]{1,}([\\d]{1,}).*";
 		String[] cmnd = new String[] {"grep", "cpu ", "/proc/stat"};
 		/* function to read output and calculate the load average in linux */
 		Function<String, Double> readLineFunction = new Function<String, Double>() {
