@@ -72,16 +72,30 @@ public class Jutilas {
 	 */
 	public void setConf(String filePath, String param, String value, String head) throws FileException {
 		Properties prop = new Properties();
-		FileInputStream fis;
+		FileInputStream fis = null;
+		FileOutputStream fos = null;
 		try {
 			fis = new FileInputStream(new File(filePath));
 			prop.load(fis);
 			fis.close();
 			prop.setProperty(param, value);
-			FileOutputStream fos = new FileOutputStream(new File(filePath));
+			fos = new FileOutputStream(new File(filePath));
 			prop.store(fos, head);
 		} catch (IOException e) {
+			try {
+				fis.close();
+				fos.close();
+			} catch (IOException e1) {
+				e1.printStackTrace();
+			}
 			throw new FileException(MessageFormat.format(UNBL_WORK_FILE_MSGFRMT, filePath, e.getMessage()));
+		} finally {
+			try {
+				fis.close();
+				fos.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 		}
 	}
 
@@ -95,13 +109,24 @@ public class Jutilas {
 	 */
 	public String getConf(String filePath, String param) throws FileException {
 		Properties prop = new Properties();
-		FileInputStream fis;
+		FileInputStream fis = null;
 		try {
 			fis = new FileInputStream(new File(filePath));
 			prop.load(fis);
 			return prop.getProperty(param);
 		} catch (IOException e) {
+			try {
+				fis.close();
+			} catch (IOException e1) {
+				e1.printStackTrace();
+			}
 			throw new FileException(MessageFormat.format(UNBL_WORK_FILE_MSGFRMT, filePath, e.getMessage()));
+		} finally {
+			try {
+				fis.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 		}
 	}
 
@@ -182,7 +207,7 @@ public class Jutilas {
 	public boolean openFileFromOS(String... path) throws IOException {
 		Desktop desktop = Desktop.isDesktopSupported() ? Desktop.getDesktop() : null;
 		if (desktop != null && desktop.isSupported(Desktop.Action.BROWSE)) {
-			Desktop.getDesktop().open(new File(getStringPath(path)));
+			desktop.open(new File(getStringPath(path)));
 			return true;
 		} else return false;
 	}
@@ -214,15 +239,16 @@ public class Jutilas {
 	/* metodo per rinominare file */
 	/**
 	 * method that renames a file
-	 * @param filePath of file to be renamed
+	 * @param filePathString of file to be renamed
 	 * @param newName of file
 	 * @throws FileException
 	 */
-	public void renameFile(String filePath, String newName) throws FileException {
-		Path file = Paths.get(filePath);
-		if (!file.toFile().exists()) throw new FileException(MessageFormat.format("Error!!! \"{0}\" file does not exist.", filePath));
-		String newPathFile = file.toString().replaceFirst(file.getFileName() + "$", newName);
-		file.toFile().renameTo(new File(newPathFile));
+	public void renameFile(String filePathString, String newName) throws FileException {
+		Path filePath = Paths.get(filePathString);
+		File file = filePath.toFile();
+		if (!file.exists()) throw new FileException(MessageFormat.format("Error!!! \"{0}\" file does not exist.", filePathString));
+		String newPathFile = filePath.toString().replaceFirst(filePath.getFileName() + "$", newName);
+		file.renameTo(new File(newPathFile));
 	}
 
 	/* metodo che restituisce stringa del contenuto del file */
@@ -275,14 +301,14 @@ public class Jutilas {
 	 * @throws FileException
 	 */
 	public String readRandomAccessFile(File file) throws FileException {
-		StringBuffer textOut = new StringBuffer();
+		StringBuilder textOut = new StringBuilder();
 		RandomAccessFile raf = null;
 		try {
 			raf = new RandomAccessFile(file, "r");
 			raf.seek(0);
 			long pntr;
 			long length = raf.length();
-			while ((pntr = raf.getFilePointer()) < length) textOut = textOut.append(raf.readLine().concat((pntr == length-1 ? "" : "\n")));
+			while ((pntr = raf.getFilePointer()) < length) textOut.append(raf.readLine().concat((pntr == length-1 ? "" : "\n")));
 		} catch (IOException e) {
 			try {
 				raf.close();
@@ -315,9 +341,10 @@ public class Jutilas {
 			long fileLenght = raf.length()-1;
 			StringBuilder sb = new StringBuilder();
 			int line = 0;
+			int readByte;
 			for (long filePointer = fileLenght; filePointer != -1; filePointer--) {
 				raf.seek(filePointer);
-				int readByte = raf.readByte();
+				readByte = raf.readByte();
 
 				if (readByte == 0xA) line = (filePointer < fileLenght) ? line + 1 : line;
 				else if (readByte == 0xD) line = (filePointer < fileLenght-1) ? line + 1 : line;
