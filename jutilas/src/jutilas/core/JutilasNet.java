@@ -11,7 +11,7 @@ import jutilas.exception.NetworkExcepiton;
  *
  */
 public class JutilasNet {
-	private static JutilasNet networkAS;
+	private static JutilasNet jutilasNet;
 
 	/* CONSTRUCTOR */
 	private JutilasNet() {
@@ -19,7 +19,7 @@ public class JutilasNet {
 
 	/* SINGLETON */
 	public static JutilasNet getInstance() {
-		return (networkAS = (networkAS == null) ? new JutilasNet() : networkAS);
+		return (jutilasNet = (jutilasNet == null) ? new JutilasNet() : jutilasNet);
 	}
 
 	/* metodo che crea e ritorna un ServerSocket della prima porta disponibile di quelle passate in ingresso */
