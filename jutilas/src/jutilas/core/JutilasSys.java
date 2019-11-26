@@ -7,6 +7,8 @@ import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import jutilas.interfaces.JutilasFunction;
+
 /**
  * Class with utils for the system
  * @author Andrea Serra
@@ -21,7 +23,7 @@ public class JutilasSys {
 	private final String PATH_USR_HOME = isLinux() ? "/home/" + OS_USR :
 										isMac() ? "/Users/" + OS_USR :
 										isWindows() ? "C:\\Users\\" + OS_USR : "";
-	private BufferedReader br;
+	private String regex;
 	private int prevActv;
 	private int prevTotal;
 	private int i;
@@ -84,7 +86,7 @@ public class JutilasSys {
 	/* ################################################################################# */
 
 	/* ################################################################################# */
-	/* START OS INFO */
+	/* START OS TYPE */
 	/* ################################################################################# */
 
 	/**
@@ -112,7 +114,7 @@ public class JutilasSys {
 	}
 
 	/* ################################################################################# */
-	/* END OS INFO */
+	/* END OS TYPE */
 	/* ################################################################################# */
 
 	/* metodo che ritorna la media di carico sulla cpu in base al tempo inserito */
@@ -123,71 +125,75 @@ public class JutilasSys {
 	 * @throws IOException
 	 */
 	public double getSystemLoadAverage(int timeSleep) throws IOException {
-		String regex;
-		String[] cmnd;
-		Function<String, Double> readLineFunction = null;
-		/* preset for windows and linux */
+		/* LINUX PRESET */
+		/* regex and command for linux */
+		regex = ".*cpu[\\s]{1,}([\\d]{1,})[\\s]{1,}([\\d]{1,})[\\s]{1,}([\\d]{1,})[\\s]{1,}([\\d]{1,})[\\s]{1,}([\\d]{1,})[\\s]{1,}([\\d]{1,})[\\s]{1,}([\\d]{1,})[\\s]{1,}([\\d]{1,})[\\s]{1,}([\\d]{1,})[\\s]{1,}([\\d]{1,}).*";
+		String[] cmnd = new String[] {"grep", "cpu ", "/proc/stat"};
+		/* function to read output and calculate the load average in linux */
+		Function<String, Double> readLineFunction = new Function<String, Double>() {
+			@Override
+			public Double apply(String stdo) {
+				Matcher matcher = Pattern.compile(regex).matcher(stdo);
+				if (matcher.find()) {
+					/* get memory info */
+					int user = Integer.valueOf(matcher.group(1));
+					int nice = Integer.valueOf(matcher.group(2));
+					int system = Integer.valueOf(matcher.group(3));
+					int idle = Integer.valueOf(matcher.group(4));
+					int iowait = Integer.valueOf(matcher.group(5));
+					int irq = Integer.valueOf(matcher.group(6));
+					int softirq = Integer.valueOf(matcher.group(7));
+					int steal = Integer.valueOf(matcher.group(8));
+
+					/* calculate active and total */
+					int actv = user + nice + system + irq + softirq + steal;
+					int total = actv + idle + iowait; 
+
+					/* if is second iteration calculate load average and return it */
+					if (i == 1) {
+						int totalDiff = (total - prevTotal);
+						int actvDiff = (actv - prevActv);
+						return Double.valueOf((100 * actvDiff)/totalDiff);
+					}
+
+					/* save activate and total calculate */
+					prevActv = actv;
+					prevTotal = total;
+
+					/* sleep */
+					try {
+						Thread.sleep(timeSleep);
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
+				}
+				return null;
+			}
+		};
+		/* function to make the sleep for windows */
+		/* not used for linux */
+		JutilasFunction windowsSleep = () -> {};
+
+		/* WINDOWS PRESET */
+		/* if is windows change preset */
 		if (isWindows()) {
-			/* regex for windows */
+			/* regex and command for windows */
 			regex = ".*[\\d]{1,}[.]{0,1}[\\d]{0,}.*";
-			/* comand for windows */
 			cmnd = new String[] {"wmic", "cpu", "get", "loadpercentage"};
 			/* function to read output in windows */
 			readLineFunction = new Function<String, Double>() {
 				@Override
 				public Double apply(String stdo) {
-					if (Pattern.matches(regex, stdo)) {
-						try {
-							br.close();
-						} catch (IOException e) {
-							e.printStackTrace();
-						}
-						return Double.valueOf(stdo);
-					}
+					if (Pattern.matches(regex, stdo)) return Double.valueOf(stdo);
 					return null;
 				}
-				
 			};
-		} else {
-			/* regex for linux */
-			regex = ".*cpu[\\s]{1,}([\\d]{1,})[\\s]{1,}([\\d]{1,})[\\s]{1,}([\\d]{1,})[\\s]{1,}([\\d]{1,})[\\s]{1,}([\\d]{1,})[\\s]{1,}([\\d]{1,})[\\s]{1,}([\\d]{1,})[\\s]{1,}([\\d]{1,})[\\s]{1,}([\\d]{1,})[\\s]{1,}([\\d]{1,}).*";
-			/* command for linux */
-			cmnd = new String[] {"grep", "cpu ", "/proc/stat"};
-			/* function to read output and calculate the load average in linux */ 
-			readLineFunction = new Function<String, Double>() {
-				@Override
-				public Double apply(String stdo) {
-					Matcher matcher = Pattern.compile(regex).matcher(stdo);
-					if (matcher.find()) {
-						int user = Integer.valueOf(matcher.group(1));
-						int nice = Integer.valueOf(matcher.group(2));
-						int system = Integer.valueOf(matcher.group(3));
-						int idle = Integer.valueOf(matcher.group(4));
-						int iowait = Integer.valueOf(matcher.group(5));
-						int irq = Integer.valueOf(matcher.group(6));
-						int softirq = Integer.valueOf(matcher.group(7));
-						int steal = Integer.valueOf(matcher.group(8));
-						
-						int actv = user + nice + system + irq + softirq + steal;
-						int total = actv + idle + iowait; 
-						
-						if (i == 0) {
-							prevActv = actv;
-							prevTotal = total;
-						} else {
-							int totalDiff = (total - prevTotal);
-							int actvDiff = (actv - prevActv);
-							
-							try {
-								br.close();
-							} catch (IOException e) {
-								e.printStackTrace();
-							}
-							return Double.valueOf((100 * actvDiff)/totalDiff);
-						}
-						
-					}
-					return null;
+			/* function to windows sleep */
+			windowsSleep = () -> {
+				try {
+					Thread.sleep(timeSleep);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
 				}
 			};
 		}
@@ -196,22 +202,26 @@ public class JutilasSys {
 		ProcessBuilder pb;
 		Process prcss;
 		InputStreamReader isr;
+		BufferedReader br;
 		String stdo;
-		for (; i < 2; i++ ) {
-			try {
-				Thread.sleep(timeSleep);
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
+		Double loadAverage;
+		for (i = 0; i < 2; i++) {
+			windowsSleep.execute();
 			pb = new ProcessBuilder(cmnd);
 			pb.redirectErrorStream(true);
 			prcss = pb.start();
 			isr = new InputStreamReader(prcss.getInputStream());
 			br = new BufferedReader(isr);
-			stdo = null;
 			while ((stdo = br.readLine()) != null) {
-				Double ret = readLineFunction.apply(stdo);
-				if (ret != null) return ret;
+				loadAverage = readLineFunction.apply(stdo);
+				if (loadAverage != null) {
+					try {
+						br.close();
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
+					return loadAverage;
+				}
 			}
 			br.close();
 		}
