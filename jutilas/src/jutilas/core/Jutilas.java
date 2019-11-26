@@ -14,6 +14,7 @@ import java.nio.file.CopyOption;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -29,6 +30,7 @@ import jutilas.exception.FileException;
  */
 public class Jutilas {
 	private static Jutilas jutilas;
+	private final String UNBL_WORK_FILE_FORMAT = "Error!!! Unable to work on file: {0} \nError message: {1}";
 
 	/* CONSTRUCTOR */
 	private Jutilas() {
@@ -79,7 +81,7 @@ public class Jutilas {
 			FileOutputStream fos = new FileOutputStream(new File(filePath));
 			prop.store(fos, head);
 		} catch (IOException e) {
-			throw new FileException("Error!!! Unable to work on file: " + filePath + "\nError message: " + e.getMessage());
+			throw new FileException(MessageFormat.format(UNBL_WORK_FILE_FORMAT, filePath, e.getMessage()));
 		}
 	}
 
@@ -99,7 +101,7 @@ public class Jutilas {
 			prop.load(fis);
 			return prop.getProperty(param);
 		} catch (IOException e) {
-			throw new FileException("Error!!! Unable to work on file: " + filePath + "\nError message: " + e.getMessage());
+			throw new FileException(MessageFormat.format(UNBL_WORK_FILE_FORMAT, filePath, e.getMessage()));
 		}
 	}
 
@@ -205,7 +207,7 @@ public class Jutilas {
 		try {
 			Files.copy(Paths.get(filePath), Paths.get(toPath), copyOptions);
 		} catch (IOException e) {
-			throw new FileException("Error!!! Copy file failed: " + filePath + "\nError message: " + e.getMessage());
+			throw new FileException(MessageFormat.format("Error!!! Copy file failed: {0}\nError message: {1}", filePath, e.getMessage()));
 		}
 	}
 
@@ -218,7 +220,7 @@ public class Jutilas {
 	 */
 	public void renameFile(String filePath, String newName) throws FileException {
 		Path file = Paths.get(filePath);
-		if (!file.toFile().exists()) throw new FileException("Error!!! \"" + filePath + "\" file does not exist.");
+		if (!file.toFile().exists()) throw new FileException(MessageFormat.format("Error!!! \"{0}\" file does not exist.", filePath));
 		String newPathFile = file.toString().replaceFirst(file.getFileName() + "$", newName);
 		file.toFile().renameTo(new File(newPathFile));
 	}
@@ -252,14 +254,14 @@ public class Jutilas {
 			try {
 				br.close();
 			} catch (IOException e1) {
-				throw new FileException("Unable to work on file:\nError message: " + e1.getMessage());
+				throw new FileException(MessageFormat.format(UNBL_WORK_FILE_FORMAT, file.getPath(), e.getMessage()));
 			}
-			throw new FileException("Unable to work on file.\nError message: " + e.getMessage());
+			throw new FileException(MessageFormat.format(UNBL_WORK_FILE_FORMAT, file.getPath(), e.getMessage()));
 		} finally {
 			try {
 				br.close();
 			} catch (IOException e) {
-				throw new FileException("Unable to work on file.\nError message: " + e.getMessage());
+				throw new FileException(MessageFormat.format(UNBL_WORK_FILE_FORMAT, file.getPath(), e.getMessage()));
 			}
 		}
 		return String.valueOf(textOut); 
@@ -278,13 +280,15 @@ public class Jutilas {
 		try {
 			raf = new RandomAccessFile(file, "r");
 			raf.seek(0);
-			while (raf.getFilePointer() < raf.length()) textOut = textOut.append(raf.readLine() + (raf.getFilePointer() == raf.length()-1 ? "" : "\n"));
+			long pntr;
+			long length = raf.length();
+			while ((pntr = raf.getFilePointer()) < length) textOut = textOut.append(raf.readLine().concat((pntr == length-1 ? "" : "\n")));
 		} catch (IOException e) {
 			try {
 				raf.close();
 			} catch (IOException e1) {
 			}
-			throw new FileException("Unable to work on file.\nError message: " + e.getMessage());
+			throw new FileException(MessageFormat.format(UNBL_WORK_FILE_FORMAT, file.getPath(), e.getMessage()));
 		} finally {
 			try {
 				raf.close();
@@ -305,7 +309,7 @@ public class Jutilas {
 	public String getLastRowsFile(String filePath, int numRows) throws FileException {
 		File file = new File(filePath);
 		RandomAccessFile raf = null;
-		if (!(file.exists() && file.isFile() && file.canRead())) throw new FileException("Errore!!! Unable to work on file: " + filePath);
+		if (!(file.exists() && file.isFile() && file.canRead())) throw new FileException(MessageFormat.format(UNBL_WORK_FILE_FORMAT, filePath, "Error"));
 		try {
 			raf = new RandomAccessFile(file, "r");
 			long fileLenght = raf.length()-1;
@@ -330,10 +334,10 @@ public class Jutilas {
 				try {
 					raf.close();
 				} catch (IOException e1) {
-					throw new FileException("Error!!! File: " + filePath + "\nError message: " + e.getMessage());
+					throw new FileException(MessageFormat.format(UNBL_WORK_FILE_FORMAT, file.getPath(), e.getMessage()));
 				}
 			}
-			throw new FileException("Error!!! Unable to work on file: " + filePath + "\nError message: " + e.getMessage());
+			throw new FileException(MessageFormat.format(UNBL_WORK_FILE_FORMAT, file.getPath(), e.getMessage()));
 		}
 	}
 
