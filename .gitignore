@@ -1,4 +1,5 @@
-jutilas/bin/
-jutilas/.settings/*
+/jutilas/bin/
+/jutilas/.settings/*
+/jutilas/version
 LICENSE
 README.md
