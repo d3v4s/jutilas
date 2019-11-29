@@ -122,7 +122,11 @@ public class JutilasSys {
 	/* START OTHER METHODS */
 	/* ################################################################################# */
 
-	/* metodo che ritorna stringa con info sistema */
+	/**
+	 * method that get a string with the system info
+	 * @param sysAvrg cpu load average
+	 * @return system info
+	 */
 	public String getSystemInfo(Double sysAvrg) {
 		/* if average is null try to get it */
 		if (sysAvrg == null) {
@@ -134,7 +138,7 @@ public class JutilasSys {
 			}
 		}
 
-//		/* build string with info */
+		/* build string with info */
 		String sysInfo = MessageFormat.format("OS: {0}\nArch: {1}\nUser: {2}\nCPU: {3}%",
 				JutilasSys.getInstance().getOsName(),
 				JutilasSys.getInstance().getOsArch(),
