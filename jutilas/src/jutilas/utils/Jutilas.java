@@ -1,4 +1,4 @@
-package jutilas.core;
+package jutilas.utils;
 
 import java.awt.Desktop;
 import java.io.BufferedReader;
