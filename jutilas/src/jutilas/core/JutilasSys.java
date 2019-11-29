@@ -3,6 +3,7 @@ package jutilas.core;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.text.MessageFormat;
 import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -117,6 +118,33 @@ public class JutilasSys {
 	/* END OS TYPE */
 	/* ################################################################################# */
 
+	/* ################################################################################# */
+	/* START OTHER METHODS */
+	/* ################################################################################# */
+
+	/* metodo che ritorna stringa con info sistema */
+	public String getSystemInfo(Double sysAvrg) {
+		/* if average is null try to get it */
+		if (sysAvrg == null) {
+			try {
+				sysAvrg = JutilasSys.getInstance().getSystemLoadAverage(1000);
+			} catch (IOException e) {
+				e.printStackTrace();
+				sysAvrg = -1d;
+			}
+		}
+
+//		/* build string with info */
+		String sysInfo = MessageFormat.format("OS: {0}\nArch: {1}\nUser: {2}\nCPU: {3}%",
+				JutilasSys.getInstance().getOsName(),
+				JutilasSys.getInstance().getOsArch(),
+				JutilasSys.getInstance().getOsUser(),
+				String.format("%.0f", sysAvrg)
+		);
+
+		return sysInfo;
+	}
+
 	/* metodo che ritorna la media di carico sulla cpu in base al tempo inserito */
 	/**
 	 * method that return the cpu load average, based on timesleep
@@ -227,4 +255,9 @@ public class JutilasSys {
 		}
 		return -1;
 	}
+
+	/* ################################################################################# */
+	/* END OTHER METHODS */
+	/* ################################################################################# */
+
 }
