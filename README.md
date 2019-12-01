@@ -3,7 +3,7 @@ Utils for Java
 
 Jutilas is a Java library that contains a utils for the development of Java software.
 
-Download [~releases~](https://github.com/d3v4s/jutilas/releases).  
+Download [releases](https://github.com/d3v4s/jutilas/releases).  
 To discover it, read the [wiki](https://github.com/d3v4s/jutilas/wiki).
 
 ## [Classes](https://github.com/d3v4s/jutilas/wiki/Classes)
